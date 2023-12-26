@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import './App.css'
-import axios from 'axios';
+import './App.css';
 import {Link} from 'react-router-dom';
 import {createDeck, deleteDeck, getDecks} from './apis/index';
 
 type TDeck = {
   title: string;
+  cards: string[];
   _id: string;
 }
 
