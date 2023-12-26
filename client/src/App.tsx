@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import './App.css'
 import axios from 'axios';
-// import {Link} from 'react-router-dom';
+import {Link} from 'react-router-dom';
+import {createDeck, deleteDeck, getDecks} from './apis/index';
 
-type TDeck={
-  title:string;
-  _id:string;
+type TDeck = {
+  title: string;
+  _id: string;
 }
 
 function App() {
@@ -17,24 +18,25 @@ function App() {
   }, []);
 
   const fetchDecks = async () => {
-    try {
-      const {data}: [] = await axios.get('http://localhost:8000/decks');
-      setAllDecks(data)
-    }catch (error) {
-      console.log('get error--', error)
-      setAllDecks([])
-    }
+    const decks: [] = await getDecks();
+    setAllDecks(decks)
   }
 
 
   const handleCreateDeck = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await axios.post('http://localhost:8000/decks', {title})
+    const deck = await createDeck(title)
+    if (deck !== null) {
+      setAllDecks([...allDecks, deck])
       setTitle('')
-      fetchDecks()
-    } catch (error) {
-      console.log('create error--', error)
+    }
+  }
+
+  const handleDeleteDeck = async (deckId: string) => {
+    const isDeleted = await deleteDeck(deckId);
+
+    if (isDeleted) {
+      setAllDecks(allDecks.filter((deck) => deck._id !== deckId))
     }
   }
 
@@ -47,9 +49,9 @@ function App() {
           <ul className="decks">
             {allDecks.map((deck) => (
               <li key={deck._id}>
-                {/*<button onClick={() => handleDeleteDeck(deck._id)}>X</button>*/}
+                <button onClick={() => handleDeleteDeck(deck._id)}>X</button>
 
-                <p to={`decks/${deck._id}`}>{deck.title}</p>
+                <Link to={`decks/${deck._id}`}>{deck.title}</Link>
               </li>
             ))}
           </ul>
